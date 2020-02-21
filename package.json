@@ -10,7 +10,7 @@
     "type-check": "tsc --noEmit"
   },
   "author": "Patrick Charles-Lundaahl",
-  "license": "To be determined",
+  "license": "MIT",
   "repository": "https://github.com/plundaahl/tiny-fsm",
   "devDependencies": {
     "@types/jest": "^24.0.23",
