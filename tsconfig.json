@@ -10,8 +10,8 @@
             "dom.iterable",
             "scripthost"
         ],
-        "module": "commonjs",
-        "outDir": "dist/",
+        "module": "AMD",
+        "outFile": "dist/bundle.js",
         "alwaysStrict": true,
         "removeComments": true,
         "strictNullChecks": true,
@@ -22,7 +22,7 @@
         "sourceMap": true
     },
     "include": [
-        "src/",
+        "index.ts",
     ],
     "exclude": [
         "node_modules",
