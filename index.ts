@@ -5,4 +5,5 @@ export {
     StateSetupFn,
     StateRunFn,
     StateExitFn,
+    stateComponents,
 } from './src';

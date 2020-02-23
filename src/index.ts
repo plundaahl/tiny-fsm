@@ -6,3 +6,6 @@ export {
     StateSetupFn,
 } from './types';
 export { IMachineContext } from './IMachineContext';
+
+import * as stateComponents from './stateComponents';
+export { stateComponents };

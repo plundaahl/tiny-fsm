@@ -5,9 +5,10 @@ import {
     createTrigger,
     transitionOnTrigger,
 } from './TransitionOnTrigger';
-import { onEnter } from './OnEnter';
-import { onRun } from './OnRun';
-import { IMachineContext } from '../IMachineContext';
+import {
+    onEnter,
+    onRun,
+} from '../stateComponents';
 
 test('example', () => {
     const trigger = createTrigger();
