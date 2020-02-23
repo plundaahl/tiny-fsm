@@ -1,13 +1,14 @@
+import { IFsmManager } from '../IFsmManager';
 import { MachineBlueprint } from '../types';
-import { IMachineContextController } from '../IMachineContextController';
+import { IInitableMachine } from '../IInitableMachine';
 import { IIdPool, BasicIdPool } from '../IdPool';
-import { MachineContext } from '../MachineContext';
+import { Machine } from '../Machine';
 
 const DEFAULT_INITIAL_CONTEXTS = 0;
 
-export class FsmManager {
-    private readonly machines: IMachineContextController<string>[] = [];
-    private readonly freeContexts: IMachineContextController<string>[] = [];
+export class FsmManager implements IFsmManager {
+    private readonly machines: IInitableMachine<string>[] = [];
+    private readonly freeContexts: IInitableMachine<string>[] = [];
     private readonly onMachineDestroyedListeners: { (machineId: number): void }[] = [];
     private readonly idPool: IIdPool;
 
@@ -39,7 +40,7 @@ export class FsmManager {
 
         const context = this
             .provisionContext()
-            .serviceMachine(blueprint, id);
+            .init(blueprint, id);
 
         this.machines[id] = context;
         return id;
@@ -58,11 +59,11 @@ export class FsmManager {
         this.onMachineDestroyedListeners.push(fn);
     }
 
-    private createContext(): IMachineContextController<string> {
-        return new MachineContext<string>(this.handleMachineTerminate);
+    private createContext(): IInitableMachine<string> {
+        return new Machine<string>(this.handleMachineTerminate);
     }
 
-    private provisionContext(): IMachineContextController<string> {
+    private provisionContext(): IInitableMachine<string> {
         const context = this.freeContexts.shift();
         if (context) {
             return context;
@@ -71,7 +72,7 @@ export class FsmManager {
         return this.createContext();
     }
 
-    private releaseContext(context: IMachineContextController<string>): void {
+    private releaseContext(context: IInitableMachine<string>): void {
         this.freeContexts.push(context);
     }
 

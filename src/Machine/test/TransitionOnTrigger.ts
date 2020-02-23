@@ -1,4 +1,4 @@
-import { IMachineContext } from '../../IMachineContext';
+import { IMachine } from '../../IMachine';
 
 type Trigger = {
     trigger: () => void,
@@ -19,7 +19,7 @@ export const createTrigger = (): Readonly<Trigger> => {
 }
 
 export const transitionOnTrigger = <T extends string>(trigger: Trigger, state: T) => {
-    return (machine: IMachineContext<T>) => {
+    return (machine: IMachine<T>) => {
         trigger.onTrigger(() => machine.transitionToState(state));
 
         return {

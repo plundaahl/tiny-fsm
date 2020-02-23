@@ -1,67 +1,86 @@
-import { IMachineContext } from '../IMachineContext';
-import { IMachineContextController } from '../IMachineContextController';
+import { IInitableMachine } from '../IInitableMachine';
 import {
     MachineBlueprint,
     StateExitFn,
 } from '../types';
 
-export class MachineContext<T extends string> implements IMachineContextController<T> {
+export class Machine<T extends string>
+    implements IInitableMachine<T> {
 
+    private readonly onEnd?: StateExitFn;
     private machineId: number;
     private blueprint: MachineBlueprint<T>;
     private onExitFns: StateExitFn[] = [];
 
-    constructor(
-        private readonly onEnd?: StateExitFn,
-    ) { }
-
-    transitionToState(state: T | 'end'): void {
-        if (!this.blueprint) {
-            throw new Error(
-                'This MachineContext is not currently servicing a machine. ' +
-                'Are you attempting to transition a machine after it has been terminated?'
-            );
-        }
-
-        this.cleanupState();
-
-        if (state === 'end') {
-            this.cleanupMachine();
-        } else {
-            this.initializeState(state);
-        }
+    constructor(onEnd?: StateExitFn) {
+        this.onEnd = onEnd;
     }
 
-    serviceMachine<J extends string>(
+
+    init<J extends string>(
         blueprint: MachineBlueprint<J>,
         machineId: number,
-    ): IMachineContextController<J> {
+    ): IInitableMachine<J> {
         if (this.blueprint) {
             throw new Error(
                 'This MachineContext is currently in use. ' +
-                'Please terminate the current machine before attempting to service a new machine.'
+                'Please terminate the current machine before ' +
+                'attempting to service a new machine.'
             );
         }
         this.blueprint = blueprint as unknown as MachineBlueprint<T>;
         this.machineId = machineId;
         this.initializeState(this.blueprint.initState);
-        return this as unknown as MachineContext<J>;
+        return this as unknown as Machine<J>;
     }
 
-    isInService(): boolean {
+
+    transitionToState(state: T | 'end'): void {
+        if (!this.blueprint) {
+            throw new Error(
+                'This MachineContext is not currently servicing a machine. ' +
+                'Are you attempting to transition a machine after it has ' +
+                'been terminated?'
+            );
+        }
+
+        if (state === 'end') {
+            return this.terminate();
+        }
+
+        this.cleanupState();
+        this.initializeState(state);
+    }
+
+
+    terminate(): void {
+        this.cleanupState();
+        this.runOnEndFns();
+
+        const { machineId } = this;
+        delete this.machineId;
+        delete this.blueprint;
+        this.onEnd && this.onEnd(machineId);
+    }
+
+
+    isInitialized(): boolean {
         return this.blueprint !== undefined;
     }
+
 
     get id(): number {
         if (!this.machineId) {
             throw new Error(
                 'This MachineContext is not currently servicing a machine. ' +
-                'Are you attempting to transition a machine after it has been terminated?'
+                'Are you attempting to transition a machine after it has ' +
+                'been terminated?'
             );
         }
 
         return this.machineId;
     }
+
 
     private initializeState(state: T): void {
         const runFns = [];
@@ -80,6 +99,7 @@ export class MachineContext<T extends string> implements IMachineContextControll
         }
     }
 
+
     private cleanupState(): void {
         for (let onExit of this.onExitFns) {
             onExit(this.machineId);
@@ -87,16 +107,11 @@ export class MachineContext<T extends string> implements IMachineContextControll
         this.onExitFns = [];
     }
 
-    private cleanupMachine(): void {
+
+    private runOnEndFns(): void {
         const { machineId } = this;
-
         for (let onEndFn of this.blueprint.onEnd || []) {
-            onEndFn(this.machineId);
+            onEndFn(machineId);
         }
-
-        delete this.machineId;
-        delete this.blueprint;
-
-        this.onEnd && this.onEnd(machineId);
     }
 }

@@ -1,5 +1,6 @@
 export {
-    IMachineContext,
+    IFsmManager,
+    IMachine,
     FsmManager,
     MachineBlueprint,
     StateSetupFn,
