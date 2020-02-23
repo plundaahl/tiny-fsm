@@ -1,7 +1,7 @@
-import { MachineBlueprint } from './types';
-import { IMachineContextController } from './IMachineContextController';
-import { IIdPool, BasicIdPool } from './IdPool';
-import { MachineContext } from './MachineContext';
+import { MachineBlueprint } from '../types';
+import { IMachineContextController } from '../IMachineContextController';
+import { IIdPool, BasicIdPool } from '../IdPool';
+import { MachineContext } from '../MachineContext';
 
 const DEFAULT_INITIAL_CONTEXTS = 0;
 
@@ -42,8 +42,6 @@ export class FsmManager {
             .serviceMachine(blueprint, id);
 
         this.machines[id] = context;
-        context.transitionToState(blueprint.initState);
-
         return id;
     }
 
@@ -65,12 +63,8 @@ export class FsmManager {
     }
 
     private provisionContext(): IMachineContextController<string> {
-        const { freeContexts } = this;
-        const nextContext = freeContexts.length - 1;
-
-        if (nextContext > 0) {
-            const context = freeContexts[nextContext - 1];
-            delete freeContexts[nextContext];
+        const context = this.freeContexts.shift();
+        if (context) {
             return context;
         }
 

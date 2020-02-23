@@ -7,5 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- [Tests](./src/FsmManager/test/FsmManager.spec.ts) for FsmManager.
 - Export the [onEnter](./src/stateComponents/onEnter.ts), [onRun](./src/stateComponents/onRun.ts), [onExit](./src/stateComponents/onExit.ts) state components.
 - This changelog.

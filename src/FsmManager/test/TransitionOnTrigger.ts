@@ -1,4 +1,4 @@
-import { IMachineContext } from '../IMachineContext';
+import { IMachineContext } from '../../IMachineContext';
 
 type Trigger = {
     trigger: () => void,

@@ -1,9 +1,9 @@
-import { IMachineContext } from './IMachineContext';
-import { IMachineContextController } from './IMachineContextController';
+import { IMachineContext } from '../IMachineContext';
+import { IMachineContextController } from '../IMachineContextController';
 import {
     MachineBlueprint,
     StateExitFn,
-} from './types';
+} from '../types';
 
 export class MachineContext<T extends string> implements IMachineContextController<T> {
 
