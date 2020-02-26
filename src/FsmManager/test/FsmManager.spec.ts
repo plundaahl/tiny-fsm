@@ -3,7 +3,8 @@ import { FsmManager } from '../FsmManager';
 import {
     onEnter,
 } from '../../stateComponents';
-import { IMachine } from '../../IMachine';
+import { IAuxDataContainer } from '../../IAuxDataContainer';
+import { IMachineSPI } from '../../IMachineSPI';
 
 const getMockIdPool = (useFn: () => void) => {
     return new (class MockIdPool extends BasicIdPool {
@@ -84,8 +85,8 @@ describe('Machine creation', () => {
 
     test('Given there are free contexts, when a machine is created, then those contexts are reused', () => {
         const mgr = new FsmManager({ initialContexts: 1 });
-        let context1: undefined | IMachine<any>;
-        let context2: undefined | IMachine<any>;
+        let context1: undefined | IMachineSPI<any>;
+        let context2: undefined | IMachineSPI<any>;
 
         const id = mgr.createMachine<'stateA'>({
             initState: 'stateA',
@@ -109,14 +110,16 @@ describe('Machine creation', () => {
 
 describe('Deleting a machine', () => {
 
-    test('When a machine is deleted, machine ID is passed into all onMachineDestroyed listeners', () => {
+    test('When a machine is deleted, machine ID provider is passed into all onMachineDestroyed listeners', () => {
         const mgr = new FsmManager({ idPool: new BasicIdPool() });
         const listeners = [
             jest.fn(),
             jest.fn(),
             jest.fn(),
         ];
-        listeners.forEach(fn => mgr.onMachineDestroyed(fn));
+        listeners.forEach(
+            fn => mgr.onMachineDestroyed(
+                (provider: IAuxDataContainer) => fn(provider.id)));
 
         const id = mgr.createMachine<'stateA'>({
             initState: 'stateA',

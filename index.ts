@@ -1,6 +1,6 @@
 export {
     IFsmManager,
-    IMachine,
+    IMachineSPI,
     FsmManager,
     MachineBlueprint,
     StateSetupFn,

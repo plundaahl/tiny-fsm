@@ -1,7 +1,7 @@
-import { MachineBlueprint } from './types';
+import { MachineBlueprint, MachineTerminateFn } from './types';
 
 export interface IFsmManager {
     createMachine<T extends string>(blueprint: MachineBlueprint<T>): number;
     deleteMachine(machineId: number): void;
-    onMachineDestroyed(fn: { (machineId: number): void }): void;
+    onMachineDestroyed(fn: MachineTerminateFn): void;
 }

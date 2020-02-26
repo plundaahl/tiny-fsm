@@ -1,3 +1,4 @@
+import { IMachine } from '../../IMachine';
 import { Machine } from "../Machine";
 import {
     onEnter,
@@ -12,7 +13,7 @@ import {
 
 describe('init', () => {
     test('Given machine is initialized, when init() is called, error.', () => {
-        const machine = new Machine();
+        const machine: IMachine<any> = new Machine();
 
         machine.init<'stateA'>({
             initState: 'stateA',
@@ -94,12 +95,6 @@ describe('Transitioning State', () => {
 
         trigger.trigger();
         expect(curState).toBe('stateA');
-    });
-
-
-    test('Given machine not initialized, when transitionToState() called, error', () => {
-        const machine = new Machine<'stateA' | 'stateB'>();
-        expect(() => machine.transitionToState('stateA')).toThrowError();
     });
 });
 

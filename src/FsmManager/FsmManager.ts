@@ -1,15 +1,16 @@
 import { IFsmManager } from '../IFsmManager';
-import { MachineBlueprint } from '../types';
-import { IInitableMachine } from '../IInitableMachine';
+import { IAuxDataContainer } from '../IAuxDataContainer';
+import { MachineBlueprint, MachineTerminateFn } from '../types';
+import { IMachine } from '../IMachine';
 import { IIdPool, BasicIdPool } from '../IdPool';
 import { Machine } from '../Machine';
 
 const DEFAULT_INITIAL_CONTEXTS = 0;
 
 export class FsmManager implements IFsmManager {
-    private readonly machines: IInitableMachine<string>[] = [];
-    private readonly freeContexts: IInitableMachine<string>[] = [];
-    private readonly onMachineDestroyedListeners: { (machineId: number): void }[] = [];
+    private readonly machines: IMachine<string>[] = [];
+    private readonly freeContexts: IMachine<string>[] = [];
+    private readonly onMachineDestroyedListeners: MachineTerminateFn[] = [];
     private readonly idPool: IIdPool;
 
     constructor(settings?: {
@@ -49,21 +50,21 @@ export class FsmManager implements IFsmManager {
     deleteMachine(machineId: number): void {
         const context = this.machines[machineId];
 
-        context.transitionToState('end');
+        context.terminate();
 
         this.releaseContext(context);
         this.releaseId(machineId);
     }
 
-    onMachineDestroyed(fn: { (machineId: number): void }): void {
+    onMachineDestroyed(fn: MachineTerminateFn): void {
         this.onMachineDestroyedListeners.push(fn);
     }
 
-    private createContext(): IInitableMachine<string> {
+    private createContext(): IMachine<string> {
         return new Machine<string>(this.handleMachineTerminate);
     }
 
-    private provisionContext(): IInitableMachine<string> {
+    private provisionContext(): IMachine<string> {
         const context = this.freeContexts.shift();
         if (context) {
             return context;
@@ -72,7 +73,7 @@ export class FsmManager implements IFsmManager {
         return this.createContext();
     }
 
-    private releaseContext(context: IInitableMachine<string>): void {
+    private releaseContext(context: IMachine<string>): void {
         this.freeContexts.push(context);
     }
 
@@ -81,9 +82,9 @@ export class FsmManager implements IFsmManager {
         this.idPool.releaseId(machineId);
     }
 
-    private handleMachineTerminate(machineId: number): void {
+    private handleMachineTerminate(machine: IAuxDataContainer): void {
         for (let fn of this.onMachineDestroyedListeners) {
-            fn(machineId);
+            fn(machine);
         }
     }
 }

@@ -1,4 +1,4 @@
-export { IMachine } from './IMachine';
+export { IMachineSPI } from './IMachineSPI';
 export { IFsmManager } from './IFsmManager';
 export { FsmManager } from './FsmManager';
 

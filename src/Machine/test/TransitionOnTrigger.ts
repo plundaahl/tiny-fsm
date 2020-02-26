@@ -1,4 +1,4 @@
-import { IMachine } from '../../IMachine';
+import { IMachineSPI } from '../../IMachineSPI';
 
 type Trigger = {
     trigger: () => void,
@@ -19,7 +19,7 @@ export const createTrigger = (): Readonly<Trigger> => {
 }
 
 export const transitionOnTrigger = <T extends string>(trigger: Trigger, state: T) => {
-    return (machine: IMachine<T>) => {
+    return (machine: IMachineSPI<T>) => {
         trigger.onTrigger(() => machine.transitionToState(state));
 
         return {

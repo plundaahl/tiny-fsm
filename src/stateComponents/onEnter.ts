@@ -1,7 +1,7 @@
 import {
     StateSetupFn,
 } from '../types';
-import { IMachine } from '../IMachine';
+import { IMachineSPI } from '../IMachineSPI';
 
 /**
  * Runs the provided callback when the associated state is entered. The current
@@ -9,8 +9,8 @@ import { IMachine } from '../IMachine';
  *
  * @param fn Callback to be run when the associated state is entered.
  */
-export const onEnter = <T extends string>(fn: (machine: IMachine<T>) => void): StateSetupFn<string> => {
-    return (machine: IMachine<T>) => {
+export const onEnter = <T extends string>(fn: (machine: IMachineSPI<T>) => void): StateSetupFn<string> => {
+    return (machine: IMachineSPI<T>) => {
         fn(machine);
         return {};
     }
