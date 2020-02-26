@@ -1,5 +1,5 @@
 import { IAuxDataContainer } from '../IAuxDataContainer';
 
-export type MachineTerminateFn = {
-    (machine: IAuxDataContainer): void,
+export type MachineTerminateFn<D> = {
+    (machine: IAuxDataContainer<D>): void,
 };

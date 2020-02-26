@@ -6,8 +6,8 @@ import { MachineBlueprint } from './types';
  * presented to state components (e.g., when states are entered, run, or
  * exited), see IMachineSPI.
  */
-export interface IMachine<T extends string> extends IAuxDataContainer {
-    init<T extends string>(blueprint: MachineBlueprint<T>, machineId: number): IMachine<T>;
+export interface IMachine<D> extends IAuxDataContainer<D> {
+    init<S extends string>(blueprint: MachineBlueprint<S, D>, auxillaryData?: D): void;
     isInitialized(): boolean;
     terminate(): void;
 }

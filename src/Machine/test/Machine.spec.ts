@@ -13,14 +13,14 @@ import {
 
 describe('init', () => {
     test('Given machine is initialized, when init() is called, error.', () => {
-        const machine: IMachine<any> = new Machine();
+        const machine: IMachine<undefined> = new Machine();
 
         machine.init<'stateA'>({
             initState: 'stateA',
             states: {
                 stateA: [],
             }
-        }, 0);
+        });
 
         expect(() => {
             machine.init<'stateA'>({
@@ -28,13 +28,13 @@ describe('init', () => {
                 states: {
                     stateA: [],
                 }
-            }, 0);
+            });
         }).toThrowError();
     });
 
 
     test('Given machine not initialized, when init() is called, the initState is entered', () => {
-        const machine = new Machine();
+        const machine: IMachine<undefined> = new Machine();
         const onEnterA = jest.fn();
         const onEnterB = jest.fn();
         const onEnterC = jest.fn();
@@ -46,7 +46,7 @@ describe('init', () => {
                 stateB: [onEnter(onEnterB)],
                 stateC: [onEnter(onEnterC)],
             }
-        }, 0);
+        });
 
         expect(onEnterA).not.toHaveBeenCalled();
         expect(onEnterB).toHaveBeenCalled();
@@ -54,24 +54,24 @@ describe('init', () => {
     });
 
 
-    test('Given machine initialized with some ID, then #id should return that value', () => {
-        const machine = new Machine();
-        const id = 33;
+    // test('Given machine initialized with some ID, then #id should return that value', () => {
+    //     const machine: IMachine<undefined>  = new Machine();
+    //     const id = 33;
 
-        machine.init<'stateA'>({
-            initState: 'stateA',
-            states: { stateA: [] }
-        }, id);
+    //     machine.init<'stateA'>({
+    //         initState: 'stateA',
+    //         states: { stateA: [] }
+    //     });
 
-        expect(machine.id).toBe(id);
-    });
+    //     expect(machine.id).toBe(id);
+    // });
 });
 
 
 describe('Transitioning State', () => {
     test('When a transition is triggered, then the machine correctly transitions state', () => {
         const trigger = createTrigger();
-        const machine = new Machine();
+        const machine: IMachine<undefined> = new Machine();
         let curState: string = '';
 
         machine.init<'stateA' | 'stateB'>({
@@ -86,7 +86,7 @@ describe('Transitioning State', () => {
                     onEnter(() => curState = 'stateB'),
                 ],
             }
-        }, 0);
+        });
 
         expect(curState).toBe('stateA');
 
@@ -99,16 +99,16 @@ describe('Transitioning State', () => {
 });
 
 
-describe('id', () => {
-    test('Given machine not initialized, when id is called, error', () => {
-        const machine = new Machine<'stateA' | 'stateB'>();
-        expect(() => machine.id).toThrowError();
-    });
+describe('Auxillary Data', () => {
+    // test('Given machine not initialized, when id is called, error', () => {
+    //     const machine: IMachine<undefined> = new Machine<'stateA' | 'stateB'>();
+    //     expect(() => machine.id).toThrowError();
+    // });
 });
 
 describe('Entering a state', () => {
     test('When a state is entered, then all onEnter functions for that state are run', () => {
-        const machine = new Machine();
+        const machine: IMachine<undefined> = new Machine();
         const onEnterFns = [
             jest.fn(),
             jest.fn(),
@@ -120,7 +120,7 @@ describe('Entering a state', () => {
             states: {
                 stateA: [...onEnterFns.map(fn => onEnter(fn))],
             }
-        }, 0);
+        });
 
         for (let fn of onEnterFns) {
             expect(fn).toHaveBeenCalled();
@@ -128,7 +128,7 @@ describe('Entering a state', () => {
     });
 
     test('When a state is entered, then all onRun functions for that state are run', () => {
-        const machine = new Machine();
+        const machine: IMachine<undefined> = new Machine();
         const onRunFns = [
             jest.fn(),
             jest.fn(),
@@ -140,7 +140,7 @@ describe('Entering a state', () => {
             states: {
                 stateA: [...onRunFns.map(fn => onRun(fn))],
             }
-        }, 0);
+        });
 
         for (let fn of onRunFns) {
             expect(fn).toHaveBeenCalled();
@@ -149,7 +149,7 @@ describe('Entering a state', () => {
 
 
     test('When a state is entered, then all onEnter functions for that state run before any onRun functions', () => {
-        const machine = new Machine();
+        const machine: IMachine<undefined> = new Machine();
         const fnCalls: string[] = [];
         const onRunFns = [
             () => fnCalls.push('onRun1'),
@@ -169,7 +169,7 @@ describe('Entering a state', () => {
                     ...onEnterFns.map(fn => onEnter(fn)),
                 ],
             }
-        }, 0);
+        });
 
         expect(fnCalls.indexOf('onRun1')).toBeGreaterThan(-1);
         expect(fnCalls.indexOf('onRun2')).toBeGreaterThan(-1);
@@ -187,7 +187,7 @@ describe('Entering a state', () => {
 
 
     test('When a state is entered, then onEnter functions are run in the order listed', () => {
-        const machine = new Machine();
+        const machine: IMachine<undefined> = new Machine();
         const fnCalls: string[] = [];
         const onEnterFns = [
             () => fnCalls.push('onEnter1'),
@@ -200,7 +200,7 @@ describe('Entering a state', () => {
             states: {
                 stateA: [...onEnterFns.map(fn => onEnter(fn))],
             }
-        }, 0);
+        });
 
         expect(fnCalls.indexOf('onEnter1')).toBeGreaterThan(-1);
         expect(fnCalls.indexOf('onEnter2')).toBeGreaterThan(-1);
@@ -212,7 +212,7 @@ describe('Entering a state', () => {
 
 
     test('When a state is entered, then onRun functions are run in the order listed', () => {
-        const machine = new Machine();
+        const machine: IMachine<undefined> = new Machine();
         const fnCalls: string[] = [];
         const onRunFns = [
             () => fnCalls.push('onRun1'),
@@ -225,7 +225,7 @@ describe('Entering a state', () => {
             states: {
                 stateA: [...onRunFns.map(fn => onEnter(fn))],
             }
-        }, 0);
+        });
 
         expect(fnCalls.indexOf('onRun1')).toBeGreaterThan(-1);
         expect(fnCalls.indexOf('onRun2')).toBeGreaterThan(-1);
@@ -237,7 +237,7 @@ describe('Entering a state', () => {
 
 
     test('When a state is entered, then NO onExit functions for that state are run', () => {
-        const machine = new Machine();
+        const machine: IMachine<undefined> = new Machine();
         const onExitFn = jest.fn();
 
         machine.init<'stateA'>({
@@ -245,14 +245,14 @@ describe('Entering a state', () => {
             states: {
                 stateA: [onExit(onExitFn)],
             }
-        }, 0);
+        });
 
         expect(onExitFn).not.toHaveBeenCalled();
     });
 
 
     test('When a state is entered, then NO onRun functions from any other state are run', () => {
-        const machine = new Machine();
+        const machine: IMachine<undefined> = new Machine();
         const onRunStateB = jest.fn();
         const onRunStateC = jest.fn();
         const onRunStateD = jest.fn();
@@ -265,7 +265,7 @@ describe('Entering a state', () => {
                 stateC: [onRun(onRunStateC)],
                 stateD: [onRun(onRunStateD)],
             }
-        }, 0);
+        });
 
         expect(onRunStateB).not.toHaveBeenCalled();
         expect(onRunStateC).not.toHaveBeenCalled();
@@ -274,7 +274,7 @@ describe('Entering a state', () => {
 
 
     test('When a state is entered, then NO onEnter functions from any other state are run', () => {
-        const machine = new Machine();
+        const machine: IMachine<undefined> = new Machine();
         const onEnterStateB = jest.fn();
         const onEnterStateC = jest.fn();
         const onEnterStateD = jest.fn();
@@ -287,7 +287,7 @@ describe('Entering a state', () => {
                 stateC: [onEnter(onEnterStateC)],
                 stateD: [onEnter(onEnterStateD)],
             }
-        }, 0);
+        });
 
         expect(onEnterStateB).not.toHaveBeenCalled();
         expect(onEnterStateC).not.toHaveBeenCalled();
@@ -296,7 +296,7 @@ describe('Entering a state', () => {
 
 
     test('When a state is entered, then NO onExit functions for that state are run', () => {
-        const machine = new Machine();
+        const machine: IMachine<undefined> = new Machine();
         const onExitFn = jest.fn();
 
         machine.init<'stateA'>({
@@ -304,7 +304,7 @@ describe('Entering a state', () => {
             states: {
                 stateA: [onExit(onExitFn)],
             }
-        }, 0);
+        });
 
         expect(onExitFn).not.toHaveBeenCalled();
     });
@@ -314,7 +314,7 @@ describe('Entering a state', () => {
 describe('State exit behavior', () => {
     test('When a state is exited, then all onExit functions for that state are called', () => {
         const trigger = createTrigger();
-        const machine = new Machine();
+        const machine: IMachine<undefined> = new Machine();
         const onExitFns = [
             jest.fn(),
             jest.fn(),
@@ -330,7 +330,7 @@ describe('State exit behavior', () => {
                 ],
                 stateB: [],
             }
-        }, 0);
+        });
 
         for (let fn of onExitFns) {
             expect(fn).not.toHaveBeenCalled();
@@ -346,7 +346,7 @@ describe('State exit behavior', () => {
 
     test('When a state is exited, then onExit functions for that state are called in order', () => {
         const trigger = createTrigger();
-        const machine = new Machine();
+        const machine: IMachine<undefined> = new Machine();
         const fnCalls: string[] = [];
         const onExitFns = [
             () => fnCalls.push('exitFn1'),
@@ -363,7 +363,7 @@ describe('State exit behavior', () => {
                 ],
                 stateB: [],
             }
-        }, 0);
+        });
 
         trigger.trigger();
 
@@ -375,7 +375,7 @@ describe('State exit behavior', () => {
 
     test('When a state is exited, then NO onEnter functions for that state are called', () => {
         const trigger = createTrigger();
-        const machine = new Machine();
+        const machine: IMachine<undefined> = new Machine();
         const onEnterFns = [
             jest.fn(),
             jest.fn(),
@@ -391,7 +391,7 @@ describe('State exit behavior', () => {
                 ],
                 stateB: [],
             }
-        }, 0);
+        });
 
         for (let fn of onEnterFns) {
             expect(fn).toHaveBeenCalledTimes(1);
@@ -406,7 +406,7 @@ describe('State exit behavior', () => {
 
     test('When a state is exited, then NO onRun functions for that state are called', () => {
         const trigger = createTrigger();
-        const machine = new Machine();
+        const machine: IMachine<undefined> = new Machine();
         const onRunFns = [
             jest.fn(),
             jest.fn(),
@@ -422,7 +422,7 @@ describe('State exit behavior', () => {
                 ],
                 stateB: [],
             }
-        }, 0);
+        });
 
         for (let fn of onRunFns) {
             expect(fn).toHaveBeenCalledTimes(1);
@@ -438,7 +438,7 @@ describe('State exit behavior', () => {
 
     test('When a state is exited, then NO onExit functions from any other state are run', () => {
         const trigger = createTrigger();
-        const machine = new Machine();
+        const machine: IMachine<undefined> = new Machine();
         const onExitStateB = jest.fn();
         const onExitStateC = jest.fn();
         const onExitStateD = jest.fn();
@@ -451,7 +451,7 @@ describe('State exit behavior', () => {
                 stateC: [onExit(onExitStateC)],
                 stateD: [onExit(onExitStateD)],
             }
-        }, 0);
+        });
 
         trigger.trigger();
 
@@ -464,13 +464,13 @@ describe('State exit behavior', () => {
 
 describe('isInService', () => {
     test('Given machine is initialized, when isInService() called, then return true', () => {
-        const machine = new Machine();
+        const machine: IMachine<undefined> = new Machine();
         machine.init<'stateA'>({
             initState: 'stateA',
             states: {
                 stateA: [],
             }
-        }, 0);
+        });
 
         expect(machine.isInitialized()).toBe(true);
     });
@@ -483,13 +483,13 @@ describe('isInService', () => {
 
 
     test('Given machine was terminated, when isInService() called, then return false', () => {
-        const machine = new Machine();
+        const machine: IMachine<undefined> = new Machine();
         machine.init<'stateA'>({
             initState: 'stateA',
             states: {
                 stateA: [],
             }
-        }, 0);
+        });
         machine.terminate();
 
         expect(machine.isInitialized()).toBe(false);
@@ -500,7 +500,7 @@ describe('isInService', () => {
 
 describe('terminating a machine', () => {
     test('When a machine is terminated, onExit functions for the current state are run', () => {
-        const machine = new Machine();
+        const machine: IMachine<undefined> = new Machine();
         const onExitFn = jest.fn();
 
         machine.init<'stateA'>({
@@ -508,7 +508,7 @@ describe('terminating a machine', () => {
             states: {
                 stateA: [onExit(onExitFn)],
             }
-        }, 0);
+        });
 
         machine.terminate();
         expect(onExitFn).toHaveBeenCalled();
@@ -516,7 +516,7 @@ describe('terminating a machine', () => {
 
 
     test('When a machine is terminated, onEnd functions are run', () => {
-        const machine = new Machine();
+        const machine: IMachine<undefined> = new Machine();
         const onEndFns = [
             jest.fn(),
             jest.fn(),
@@ -529,7 +529,7 @@ describe('terminating a machine', () => {
                 stateA: [],
             },
             onEnd: [...onEndFns]
-        }, 0);
+        });
 
         for (let fn of onEndFns) {
             expect(fn).not.toHaveBeenCalled();
@@ -544,7 +544,7 @@ describe('terminating a machine', () => {
 
 
     test('When transitionToState() is called with state "end," then machine is terminated', () => {
-        const machine = new Machine();
+        const machine: IMachine<undefined> = new Machine();
         const trigger = createTrigger();
         const onEndFns = [
             jest.fn(),
@@ -555,10 +555,10 @@ describe('terminating a machine', () => {
         machine.init<'stateA'>({
             initState: 'stateA',
             states: {
-                stateA: [transitionOnTrigger<'stateA' | 'end'>(trigger, 'end')],
+                stateA: [transitionOnTrigger(trigger, 'end')],
             },
             onEnd: [...onEndFns]
-        }, 0);
+        });
 
 
         for (let fn of onEndFns) {

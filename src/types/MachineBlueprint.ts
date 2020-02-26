@@ -1,11 +1,10 @@
-import { StateExitFn } from './StateExitFn';
 import { StateSetupFn } from './StateSetupFn';
 import { MachineTerminateFn } from './MachineTerminateFn';
 
-export type MachineBlueprint<T extends string> = {
-    initState: T,
+export type MachineBlueprint<S extends string, D> = {
+    initState: S,
     states: {
-        [K in T]: StateSetupFn<T>[]
+        [K in S]: StateSetupFn<S | 'end', D>[]
     },
-    onEnd?: MachineTerminateFn[],
+    onEnd?: MachineTerminateFn<D>[],
 };

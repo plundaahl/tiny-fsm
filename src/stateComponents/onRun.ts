@@ -10,8 +10,8 @@ import { IMachineSPI } from '../IMachineSPI';
  *
  * @param fn Callback to run when the associated state exits.
  */
-export const onRun = <T extends string>(fn: (machine: IMachineSPI<T>) => void): StateSetupFn<string> => {
-    return (machine: IMachineSPI<T>) => {
+export const onRun = <T extends string, D>(fn: (machine: IMachineSPI<T, D>) => void): StateSetupFn<string, D> => {
+    return (machine: IMachineSPI<T, D>) => {
         return { onRun: () => fn(machine) };
     }
 }

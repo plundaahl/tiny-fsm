@@ -18,8 +18,8 @@ export const createTrigger = (): Readonly<Trigger> => {
     }
 }
 
-export const transitionOnTrigger = <T extends string>(trigger: Trigger, state: T) => {
-    return (machine: IMachineSPI<T>) => {
+export const transitionOnTrigger = <T extends string, D>(trigger: Trigger, state: T) => {
+    return (machine: IMachineSPI<T, D>) => {
         trigger.onTrigger(() => machine.transitionToState(state));
 
         return {

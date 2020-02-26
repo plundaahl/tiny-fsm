@@ -9,8 +9,8 @@ import { IMachineSPI } from '../IMachineSPI';
  *
  * @param fn Callback to run when the associated state exits.
  */
-export const onExit = <T extends string>(fn: (machine: IMachineSPI<T>) => void): StateSetupFn<string> => {
-    return (machine: IMachineSPI<T>) => {
+export const onExit = <T extends string, D>(fn: (machine: IMachineSPI<T, D>) => void): StateSetupFn<string, D> => {
+    return (machine: IMachineSPI<T, D>) => {
         return { onExit: () => fn(machine) };
     }
 }

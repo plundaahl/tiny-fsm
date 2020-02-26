@@ -1,5 +1,5 @@
 import { IMachineSPI } from '../IMachineSPI';
 
-export type StateExitFn<T extends string> = {
-    (machine: IMachineSPI<T>): void,
+export type StateExitFn<T extends string, D> = {
+    (machine: IMachineSPI<T, D>): void,
 };

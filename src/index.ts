@@ -1,6 +1,7 @@
+export { IAuxDataContainer } from './IAuxDataContainer';
 export { IMachineSPI } from './IMachineSPI';
-export { IFsmManager } from './IFsmManager';
-export { FsmManager } from './FsmManager';
+export { IMachine } from './IMachine';
+export { Machine } from './Machine';
 
 export {
     MachineBlueprint,
