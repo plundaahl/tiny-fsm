@@ -3,6 +3,7 @@
 
 ### Project-Specific Stuff ###
 dist/
+bundle.js
 
 ### Git ###
 # Created by git for backups. To disable backups in Git:
