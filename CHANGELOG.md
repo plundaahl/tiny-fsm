@@ -5,6 +5,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 This project is currently in design phase, and as such does not follow Semantic Versioning. However, it will adopt Semantic Versioning beginning with version 1.0.0.
 <!-- and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). -->
 
+## 0.4.2
+
+### Changed
+- Updated minimist 1.2.0 > 1.2.5 to resolve vulnerability [GHSA-7fhm-mqm4-2wp7](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-7598)
+
 ## 0.4.1
 
 ### Added
