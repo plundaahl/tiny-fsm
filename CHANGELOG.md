@@ -14,6 +14,10 @@ This project is currently in design phase, and as such does not follow Semantic 
 - This changelog.
 
 ### Changed
+- Updated [readme](README.md) to explain what this project actually is.
 - Brought examples into main project.
 - Add changelog note that we are not yet using semantic versioning.
 - Renamed `IMachineContext` to `IMachine`.
+
+### Removed
+- `FsmManager` (machines are now self-managed).
