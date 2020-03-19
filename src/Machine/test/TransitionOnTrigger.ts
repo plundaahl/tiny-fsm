@@ -1,3 +1,4 @@
+import { StateSetupFn } from '../../types'
 import { IMachineSPI } from '../../IMachineSPI';
 
 type Trigger = {
@@ -18,12 +19,12 @@ export const createTrigger = (): Readonly<Trigger> => {
     }
 }
 
-export const transitionOnTrigger = <T extends string, D>(trigger: Trigger, state: T) => {
+export const transitionOnTrigger = <T extends string, D>(
+    trigger: Trigger,
+    state: T,
+): StateSetupFn<T, D> => {
     return (machine: IMachineSPI<T, D>) => {
         trigger.onTrigger(() => machine.transitionToState(state));
-
-        return {
-            onExit: () => trigger.clear(),
-        }
+        return () => trigger.clear();
     };
 };

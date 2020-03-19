@@ -14,7 +14,9 @@ export class MachineCore<S extends string, D>
     private auxData?: D;
     private blueprint: MachineBlueprint<S, D>;
     private onExitFns: StateExitFn<S, D>[] = [];
-
+    private isTransitioning: boolean = false;
+    private isInCleanup: boolean = false;
+    private nextState: S | 'end' | undefined;
 
     constructor(onEnd?: MachineTerminateFn<D>) {
         this.onEnd = onEnd;
@@ -32,9 +34,19 @@ export class MachineCore<S extends string, D>
                 'attempting to service a new machine.'
             );
         }
+
+        this.terminate = this.terminate.bind(this);
+        this.isInitialized = this.isInitialized.bind(this);
+        this.getAuxillaryData = this.getAuxillaryData.bind(this);
+        this.setAuxillaryData = this.setAuxillaryData.bind(this);
+        this.transitionToState = this.transitionToState.bind(this);
+        this.initializeState = this.initializeState.bind(this);
+        this.cleanupState = this.cleanupState.bind(this);
+        this.runOnEndFns = this.runOnEndFns.bind(this);
+
         this.blueprint = blueprint as unknown as MachineBlueprint<S, D>;
         this.auxData = auxData;
-        this.initializeState(this.blueprint.initState);
+        this.transitionToState(this.blueprint.initState);
     }
 
 
@@ -46,6 +58,9 @@ export class MachineCore<S extends string, D>
 
         delete this.blueprint;
         delete this.auxData;
+
+        delete this.nextState;
+        this.isTransitioning = false;
     }
 
 
@@ -73,38 +88,52 @@ export class MachineCore<S extends string, D>
             );
         }
 
-        if (state === 'end') {
-            return this.terminate();
+        if (this.isInCleanup) {
+            return;
         }
 
-        this.cleanupState();
-        this.initializeState(state);
+        if (this.isTransitioning) {
+            this.nextState = this.nextState || state;
+            return;
+        }
+
+        this.isTransitioning = true;
+        if (state === 'end') {
+            this.terminate();
+        } else {
+            this.cleanupState();
+            this.initializeState(state);
+        }
+        this.isTransitioning = false;
+
+
+        if (this.nextState !== undefined) {
+            const { nextState } = this;
+            delete this.nextState;
+            this.transitionToState(nextState);
+        }
     }
 
 
     private initializeState(state: S): void {
-        const runFns = [];
         const cleanupFns = [];
 
         for (let setupFn of this.blueprint.states[state]) {
-            const { onRun, onExit } = setupFn(this);
-            onRun && runFns.push(onRun);
+            const onExit = setupFn(this);
             onExit && cleanupFns.push(onExit);
         }
 
         this.onExitFns = cleanupFns;
-
-        for (let run of runFns) {
-            run(this);
-        }
     }
 
 
     private cleanupState(): void {
+        this.isInCleanup = true;
         for (let onExit of this.onExitFns) {
             onExit(this);
         }
         this.onExitFns = [];
+        this.isInCleanup = false;
     }
 
 

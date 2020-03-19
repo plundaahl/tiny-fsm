@@ -4,7 +4,6 @@ export {
     MachineBlueprint,
     Machine,
     StateSetupFn,
-    StateRunFn,
     StateExitFn,
     stateComponents,
 } from './src';

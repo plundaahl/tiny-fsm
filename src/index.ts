@@ -6,7 +6,6 @@ export { Machine } from './Machine';
 export {
     MachineBlueprint,
     StateExitFn,
-    StateRunFn,
     StateSetupFn,
 } from './types';
 

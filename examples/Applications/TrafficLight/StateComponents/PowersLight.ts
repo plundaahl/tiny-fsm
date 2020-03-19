@@ -7,8 +7,6 @@ import { StateSetupFn } from '../../../..';
 export const powersLight = (light: HTMLElement): StateSetupFn<string, any> => {
     return () => {
         light.classList.add('lit');
-        return {
-            onExit: () => light.classList.remove('lit'),
-        };
+        return () => light.classList.remove('lit');
     }
 }

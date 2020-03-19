@@ -7,7 +7,6 @@ import {
 } from '../../../StateComponents';
 
 const {
-    onRun,
     onEnter,
     onExit,
 } = stateComponents;
@@ -41,7 +40,7 @@ export const createTimerFsmBlueprint = (
                 disablesElement(display),
             ],
             stopped: [
-                onRun(() => { trigger.innerHTML = 'reset'; }),
+                onEnter(() => { trigger.innerHTML = 'reset'; }),
                 transitionOnClick(trigger, 'ready'),
                 disablesElement(display),
             ],

@@ -11,8 +11,6 @@ export const disablesElement = <T extends string>(
 ): StateSetupFn<T, any> => {
     return () => {
         element.disabled = true;
-        return {
-            onExit: () => element.disabled = false,
-        }
+        return () => { element.disabled = false };
     }
 }

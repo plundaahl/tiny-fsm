@@ -4,6 +4,7 @@
 - [Installation](#Installation)
 - [How Do I Use It?](#How-Do-I-Use-It?)
 - [Examples](#Can-I-See-Live-Examples?)
+- [StateComponents](#What-Are-These-StateComponents?-How-Do-I-Build-Them?)
 - [Why Should I Use This?](#Why-Should-I-Use-This?)
 
 ## Overview
@@ -82,6 +83,56 @@ cd tiny-fsm
 npm install
 npm run-script build-examples
 ```
+
+## What Are These StateComponents? How Do I Build Them?
+StateComponents are small, reusable aspects of a state. They make it reasonably simple to take the imperative logic that needs to happen at the start and end of a state, and package it so that it can be used declaratively.
+
+A StateComponent is really just a function that implements the `StateSetupFn` interface. Here's an example of how we might build one:
+
+```typescript
+import { IMachine, Machine, StateSetupFn } from 'TinyFSM';
+
+// Factory Function
+function logsFoo(): StateSetupFn<T extends String, any> {
+
+    // Setup Function (this is the actual StateComponent)
+    return (machine: IMachineSPI<T, any>) => {
+        console.log('foo');
+
+        // Cleanup Function
+        return (machine: IMachineSPI<T, any>) => {
+            console.log('bar');
+        };
+    }
+}
+
+// Using our component
+const machine: IMachine<undefined> = new Machine();
+machine.init<'stateA' | 'stateB'>({
+    initState: 'stateA',
+    states: {
+        stateA: [
+            logsFooAndBar(),
+            transitionAfterTimeout(1000, 'StateB'),
+        ],
+        stateB: [
+            logsFooAndBar(),
+            transitionAfterTimeout(1000, 'StateA'),
+        ],
+    }
+});
+```
+
+Thanks to the `transitionAfterTimeout` StateComponent, this state machine will cycle between stateA and StateB every second. Each time it transitions, `bar` and `foo` will be printed to the console.
+
+#### Factory Function
+This is our constructor function. Its job is to return a StateComponent. This isn't actually a necessary part of a StateComponent, but it can be useful for providing configuration to the StateComponent at the call site, so it's included here.
+
+#### Setup Function
+This is the actual StateComponent. Its job is to do whatever the StateComponent requires when the state is first entered. The TinyFSM `Machine` will take care of running this function every time the containing state is entered.
+
+#### Cleanup Function
+The cleanup function is optional. If your StateComponent doesn't have any cleanup to do, feel free to omit it. If you do return a function from your setup function, TinyFSM's `Machine` will take care of invoking it when the associated state is transitioned out of.
 
 ## Why Should I Use This?
 You probably shouldn't! At least, not for anything production-related. This is a personal project undertaken for a) my own curiosity, and b) to serve as a tool in my hobby game development projects. The API is still evolving, and there are probably a bunch of issues I haven't found with it.

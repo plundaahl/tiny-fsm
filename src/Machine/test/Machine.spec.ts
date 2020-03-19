@@ -3,12 +3,12 @@ import { Machine } from "../Machine";
 import {
     onEnter,
     onExit,
-    onRun,
 } from '../../stateComponents';
 import {
     createTrigger,
     transitionOnTrigger,
 } from './TransitionOnTrigger';
+import { IMachineSPI } from '../../IMachineSPI';
 
 
 describe('init', () => {
@@ -52,19 +52,6 @@ describe('init', () => {
         expect(onEnterB).toHaveBeenCalled();
         expect(onEnterC).not.toHaveBeenCalled();
     });
-
-
-    // test('Given machine initialized with some ID, then #id should return that value', () => {
-    //     const machine: IMachine<undefined>  = new Machine();
-    //     const id = 33;
-
-    //     machine.init<'stateA'>({
-    //         initState: 'stateA',
-    //         states: { stateA: [] }
-    //     });
-
-    //     expect(machine.id).toBe(id);
-    // });
 });
 
 
@@ -95,6 +82,145 @@ describe('Transitioning State', () => {
 
         trigger.trigger();
         expect(curState).toBe('stateA');
+    });
+
+    test('When a transition is triggered during state setup, all setup functions run before next transition', () => {
+        const machine: IMachine<undefined> = new Machine();
+        const callStack: string[] = [];
+
+        const ENTERED_STATE_B = 'Entered State B';
+        const TRANSITION_NOT_YET_TRIGGERED = 'Transition Not Yet Triggered';
+        const TRIGGERING_TRANSITION = 'Triggering Transition';
+        const TRANSITION_WAS_TRIGGERED = 'Transition Was Triggered';
+
+        const enteredStateB = () => {
+            callStack.push(ENTERED_STATE_B);
+        };
+        const preTransitionSetupFn = () => {
+            callStack.push(TRANSITION_NOT_YET_TRIGGERED);
+        };
+        const triggerTransition = (machine: IMachineSPI<'stateA' | 'stateB', undefined>) => {
+            callStack.push(TRIGGERING_TRANSITION);
+            machine.transitionToState('stateB');
+        };
+        const postTransitionSetupFn = () => {
+            callStack.push(TRANSITION_WAS_TRIGGERED);
+        };
+
+        machine.init<'stateA' | 'stateB'>({
+            initState: 'stateA',
+            states: {
+                stateA: [
+                    preTransitionSetupFn,
+                    triggerTransition,
+                    postTransitionSetupFn,
+                ],
+                stateB: [
+                    enteredStateB,
+                ],
+            }
+        });
+
+        expect(callStack[0]).toBe(TRANSITION_NOT_YET_TRIGGERED);
+        expect(callStack[1]).toBe(TRIGGERING_TRANSITION);
+        expect(callStack[2]).toBe(TRANSITION_WAS_TRIGGERED);
+        expect(callStack[3]).toBe(ENTERED_STATE_B);
+    });
+
+    test('When a transition is triggered during state setup, all setup functions run before any teardown functions', () => {
+        const machine: IMachine<undefined> = new Machine();
+        const callStack: string[] = [];
+
+        const TRANSITION_COMPLETE = 'Transition Complete';
+        const TRIGGER_SETUP = 'Trigger Setup Function';
+        const PRE_TRIGGER_TEARDOWN = 'Pre-Trigger Teardown Function';
+        const TRIGGER_TEARDOWN = 'Trigger Teardown Function';
+        const POST_TRIGGER_TEARDOWN = 'Post-Trigger Teardown Function';
+
+        const enteredStateB = () => {
+            callStack.push(TRANSITION_COMPLETE);
+        };
+        const preTrigger = () => () => callStack.push(PRE_TRIGGER_TEARDOWN);
+        const trigger = (machine: IMachineSPI<'stateA' | 'stateB', undefined>) => {
+            callStack.push(TRIGGER_SETUP);
+            machine.transitionToState('stateB');
+            return () => callStack.push(TRIGGER_TEARDOWN);
+        };
+        const postTrigger = () => () => callStack.push(POST_TRIGGER_TEARDOWN);
+
+        machine.init<'stateA' | 'stateB'>({
+            initState: 'stateA',
+            states: {
+                stateA: [
+                    preTrigger,
+                    trigger,
+                    postTrigger,
+                ],
+                stateB: [
+                    enteredStateB,
+                ],
+            }
+        });
+
+        expect(callStack[0]).toBe(TRIGGER_SETUP);
+        expect(callStack[1]).toBe(PRE_TRIGGER_TEARDOWN);
+        expect(callStack[2]).toBe(TRIGGER_TEARDOWN);
+        expect(callStack[3]).toBe(POST_TRIGGER_TEARDOWN);
+        expect(callStack[4]).toBe(TRANSITION_COMPLETE);
+    });
+
+    test('When multiple transitions are triggered during state setup, only the first is run', () => {
+        const machine: IMachine<undefined> = new Machine();
+        const callStack: string[] = [];
+
+        const ENTERED_STATE_C = 'entered state C';
+        const ENTERED_STATE_B = 'entered state B';
+
+        machine.init<'stateA' | 'stateB' | 'stateC'>({
+            initState: 'stateA',
+            states: {
+                stateA: [
+                    (machine) => machine.transitionToState('stateB'),
+                    (machine) => machine.transitionToState('stateC'),
+                ],
+                stateB: [
+                    () => { callStack.push(ENTERED_STATE_B); },
+                ],
+                stateC: [
+                    () => { callStack.push(ENTERED_STATE_C); },
+                ]
+            }
+        });
+
+        expect(callStack).toContain(ENTERED_STATE_B);
+        expect(callStack).not.toContain(ENTERED_STATE_C);
+    });
+
+    test('When a transition is triggered during state teardown, that transition is not executed', () => {
+        const machine: IMachine<undefined> = new Machine();
+        const callStack: string[] = [];
+
+        const ENTERED_STATE_C = 'entered state C';
+        const ENTERED_STATE_B = 'entered state B';
+
+        machine.init<'stateA' | 'stateB' | 'stateC'>({
+            initState: 'stateA',
+            states: {
+                stateA: [
+                    () => (machine) => machine.transitionToState('stateC'),
+                    (machine) => machine.transitionToState('stateB'),
+                ],
+                stateB: [
+                    () => { callStack.push(ENTERED_STATE_B); },
+                ],
+                stateC: [
+                    () => { callStack.push(ENTERED_STATE_C); },
+                ]
+            }
+        });
+
+        expect(callStack).toContain(ENTERED_STATE_B);
+        expect(callStack).not.toContain(ENTERED_STATE_C);
     });
 });
 
@@ -127,64 +253,6 @@ describe('Entering a state', () => {
         }
     });
 
-    test('When a state is entered, then all onRun functions for that state are run', () => {
-        const machine: IMachine<undefined> = new Machine();
-        const onRunFns = [
-            jest.fn(),
-            jest.fn(),
-            jest.fn(),
-        ];
-
-        machine.init<'stateA'>({
-            initState: 'stateA',
-            states: {
-                stateA: [...onRunFns.map(fn => onRun(fn))],
-            }
-        });
-
-        for (let fn of onRunFns) {
-            expect(fn).toHaveBeenCalled();
-        }
-    });
-
-
-    test('When a state is entered, then all onEnter functions for that state run before any onRun functions', () => {
-        const machine: IMachine<undefined> = new Machine();
-        const fnCalls: string[] = [];
-        const onRunFns = [
-            () => fnCalls.push('onRun1'),
-            () => fnCalls.push('onRun2'),
-        ];
-        const onEnterFns = [
-            () => fnCalls.push('onEnter1'),
-            () => fnCalls.push('onEnter2'),
-            () => fnCalls.push('onEnter3'),
-        ];
-
-        machine.init<'stateA'>({
-            initState: 'stateA',
-            states: {
-                stateA: [
-                    ...onRunFns.map(fn => onRun(fn)),
-                    ...onEnterFns.map(fn => onEnter(fn)),
-                ],
-            }
-        });
-
-        expect(fnCalls.indexOf('onRun1')).toBeGreaterThan(-1);
-        expect(fnCalls.indexOf('onRun2')).toBeGreaterThan(-1);
-        expect(fnCalls.indexOf('onEnter1')).toBeGreaterThan(-1);
-        expect(fnCalls.indexOf('onEnter2')).toBeGreaterThan(-1);
-        expect(fnCalls.indexOf('onEnter3')).toBeGreaterThan(-1);
-
-        expect(fnCalls.indexOf('onEnter1')).toBeLessThan(fnCalls.indexOf('onRun1'));
-        expect(fnCalls.indexOf('onEnter1')).toBeLessThan(fnCalls.indexOf('onRun2'));
-        expect(fnCalls.indexOf('onEnter2')).toBeLessThan(fnCalls.indexOf('onRun1'));
-        expect(fnCalls.indexOf('onEnter2')).toBeLessThan(fnCalls.indexOf('onRun2'));
-        expect(fnCalls.indexOf('onEnter3')).toBeLessThan(fnCalls.indexOf('onRun1'));
-        expect(fnCalls.indexOf('onEnter3')).toBeLessThan(fnCalls.indexOf('onRun2'));
-    });
-
 
     test('When a state is entered, then onEnter functions are run in the order listed', () => {
         const machine: IMachine<undefined> = new Machine();
@@ -211,31 +279,6 @@ describe('Entering a state', () => {
     });
 
 
-    test('When a state is entered, then onRun functions are run in the order listed', () => {
-        const machine: IMachine<undefined> = new Machine();
-        const fnCalls: string[] = [];
-        const onRunFns = [
-            () => fnCalls.push('onRun1'),
-            () => fnCalls.push('onRun2'),
-            () => fnCalls.push('onRun3'),
-        ];
-
-        machine.init<'stateA'>({
-            initState: 'stateA',
-            states: {
-                stateA: [...onRunFns.map(fn => onEnter(fn))],
-            }
-        });
-
-        expect(fnCalls.indexOf('onRun1')).toBeGreaterThan(-1);
-        expect(fnCalls.indexOf('onRun2')).toBeGreaterThan(-1);
-        expect(fnCalls.indexOf('onRun3')).toBeGreaterThan(-1);
-
-        expect(fnCalls.indexOf('onRun1')).toBeLessThan(fnCalls.indexOf('onRun2'));
-        expect(fnCalls.indexOf('onRun2')).toBeLessThan(fnCalls.indexOf('onRun3'));
-    });
-
-
     test('When a state is entered, then NO onExit functions for that state are run', () => {
         const machine: IMachine<undefined> = new Machine();
         const onExitFn = jest.fn();
@@ -248,28 +291,6 @@ describe('Entering a state', () => {
         });
 
         expect(onExitFn).not.toHaveBeenCalled();
-    });
-
-
-    test('When a state is entered, then NO onRun functions from any other state are run', () => {
-        const machine: IMachine<undefined> = new Machine();
-        const onRunStateB = jest.fn();
-        const onRunStateC = jest.fn();
-        const onRunStateD = jest.fn();
-
-        machine.init<'stateA' | 'stateB' | 'stateC' | 'stateD'>({
-            initState: 'stateA',
-            states: {
-                stateA: [],
-                stateB: [onRun(onRunStateB)],
-                stateC: [onRun(onRunStateC)],
-                stateD: [onRun(onRunStateD)],
-            }
-        });
-
-        expect(onRunStateB).not.toHaveBeenCalled();
-        expect(onRunStateC).not.toHaveBeenCalled();
-        expect(onRunStateD).not.toHaveBeenCalled();
     });
 
 
@@ -400,37 +421,6 @@ describe('State exit behavior', () => {
         trigger.trigger();
 
         for (let fn of onEnterFns) {
-            expect(fn).toHaveBeenCalledTimes(1);
-        }
-    });
-
-    test('When a state is exited, then NO onRun functions for that state are called', () => {
-        const trigger = createTrigger();
-        const machine: IMachine<undefined> = new Machine();
-        const onRunFns = [
-            jest.fn(),
-            jest.fn(),
-            jest.fn(),
-        ]
-
-        machine.init<'stateA' | 'stateB'>({
-            initState: 'stateA',
-            states: {
-                stateA: [
-                    transitionOnTrigger(trigger, 'stateB'),
-                    ...onRunFns.map(fn => onRun(fn))
-                ],
-                stateB: [],
-            }
-        });
-
-        for (let fn of onRunFns) {
-            expect(fn).toHaveBeenCalledTimes(1);
-        }
-
-        trigger.trigger();
-
-        for (let fn of onRunFns) {
             expect(fn).toHaveBeenCalledTimes(1);
         }
     });
