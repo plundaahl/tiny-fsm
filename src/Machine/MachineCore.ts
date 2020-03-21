@@ -1,11 +1,9 @@
 import { IMachine } from '../IMachine';
 import { ISetupMachine } from '../ISetupMachine';
 import { ICleanupMachine } from '../ICleanupMachine';
-import {
-    MachineBlueprint,
-    StateExitFn,
-    MachineTerminateFn,
-} from '../types';
+import { IBlueprint } from '../IBlueprint';
+import { IAspectCleanupFn } from '../IAspectCleanupFn';
+import { IMachineTerminateFn } from '../IMachineTerminateFn';
 
 
 export class MachineCore<S extends string, D>
@@ -13,20 +11,20 @@ export class MachineCore<S extends string, D>
 
     private setupMachine: ISetupMachine<S, D>;
     private cleanupMachine: ICleanupMachine<D>;
-    private readonly onEnd?: MachineTerminateFn<D>;
+    private readonly onEnd?: IMachineTerminateFn<D>;
     private auxData?: D;
-    private blueprint: MachineBlueprint<S, D>;
-    private onExitFns: StateExitFn<D>[] = [];
+    private blueprint: IBlueprint<S, D>;
+    private onExitFns: IAspectCleanupFn<D>[] = [];
     private isTransitioning: boolean = false;
     private nextState: S | 'end' | undefined;
 
-    constructor(onEnd?: MachineTerminateFn<D>) {
+    constructor(onEnd?: IMachineTerminateFn<D>) {
         this.onEnd = onEnd;
     }
 
 
     init<J extends string>(
-        blueprint: MachineBlueprint<J, D>,
+        blueprint: IBlueprint<J, D>,
         auxData?: D,
     ): void {
         if (this.blueprint) {
@@ -59,7 +57,7 @@ export class MachineCore<S extends string, D>
             terminate: this.terminate,
         };
 
-        this.blueprint = blueprint as unknown as MachineBlueprint<S, D>;
+        this.blueprint = blueprint as unknown as IBlueprint<S, D>;
         this.auxData = auxData;
         this.transitionToState(this.blueprint.initState);
     }

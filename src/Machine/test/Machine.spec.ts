@@ -3,13 +3,12 @@ import { Machine } from "../Machine";
 import {
     onEnter,
     onExit,
-} from '../../stateComponents';
+} from '../../Aspects';
 import {
     createTrigger,
     transitionOnTrigger,
 } from './TransitionOnTrigger';
 import { ISetupMachine } from '../../ISetupMachine';
-import { ICleanupMachine } from '../../ICleanupMachine';
 
 
 describe('init', () => {

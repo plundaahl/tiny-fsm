@@ -1,8 +1,8 @@
-import { StateSetupFn } from '../..';
+import { IAspect } from '../..';
 import { ISetupMachine } from '../..';
 
 export const transitionOnEnter = <T extends string>(
     state: T
-): StateSetupFn<T, any> => {
+): IAspect<T, any> => {
     return (machine: ISetupMachine<T, any>) => machine.transitionToState(state);
 }

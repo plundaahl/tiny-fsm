@@ -1,6 +1,6 @@
 import {
     ISetupMachine,
-    StateSetupFn,
+    IAspect,
 } from '../..';
 
 /**
@@ -9,7 +9,7 @@ import {
 export const transitionAfterTimeout = <T extends string>(
     delayInMs: number,
     state: T,
-): StateSetupFn<T, any> => {
+): IAspect<T, any> => {
     return (machine: ISetupMachine<T, any>) => {
         const timer = setTimeout(
             () => machine.transitionToState(state),

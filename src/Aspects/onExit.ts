@@ -1,4 +1,4 @@
-import { StateSetupFn } from '../types';
+import { IAspect } from '../IAspect';
 import { ICleanupMachine } from '../ICleanupMachine';
 
 /**
@@ -9,7 +9,7 @@ import { ICleanupMachine } from '../ICleanupMachine';
  */
 export const onExit = <D>(
     fn: (machine: ICleanupMachine<D>) => void
-): StateSetupFn<string, D> => {
+): IAspect<string, D> => {
     return () => {
         return (machine: ICleanupMachine<D>) => {
             fn(machine);

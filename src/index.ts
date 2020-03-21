@@ -1,14 +1,11 @@
+export { IAspect } from './IAspect';
+export { IAspectCleanupFn } from './IAspectCleanupFn';
 export { IAuxDataHoldingMachine } from './IAuxDataHoldingMachine';
-export { ISetupMachine } from './ISetupMachine';
+export { IBlueprint } from './IBlueprint';
 export { ICleanupMachine } from './ICleanupMachine';
 export { IMachine } from './IMachine';
+export { ISetupMachine } from './ISetupMachine';
 export { Machine } from './Machine';
 
-export {
-    MachineBlueprint,
-    StateExitFn,
-    StateSetupFn,
-} from './types';
-
-import * as stateComponents from './stateComponents';
-export { stateComponents };
+import * as aspects from './Aspects';
+export { aspects };

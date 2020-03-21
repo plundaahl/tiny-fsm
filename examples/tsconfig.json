@@ -23,7 +23,7 @@
     "include": [
         "examples",
         "Applications",
-        "StateComponents",
+        "Aspects",
     ],
     "exclude": [
         "node_modules",

@@ -1,6 +1,6 @@
 import {
     ISetupMachine,
-    StateSetupFn,
+    IAspect,
 } from '../..';
 
 /**
@@ -11,7 +11,7 @@ export const transitionOnCondition = <T extends string>(
     condition: () => boolean,
     successState: T,
     failState: T,
-): StateSetupFn<T, any> => {
+): IAspect<T, any> => {
     return (machine: ISetupMachine<T, any>) => {
         machine.transitionToState(condition()
             ? successState

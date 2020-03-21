@@ -1,4 +1,4 @@
-import { StateSetupFn } from '../../types'
+import { IAspect } from '../../IAspect'
 import { ISetupMachine } from '../../ISetupMachine';
 
 type Trigger = {
@@ -22,7 +22,7 @@ export const createTrigger = (): Readonly<Trigger> => {
 export const transitionOnTrigger = <T extends string, D>(
     trigger: Trigger,
     state: T,
-): StateSetupFn<T, D> => {
+): IAspect<T, D> => {
     return (machine: ISetupMachine<T, D>) => {
         trigger.onTrigger(() => machine.transitionToState(state));
         return () => trigger.clear();

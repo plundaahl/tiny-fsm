@@ -2,9 +2,9 @@ export {
     IMachine,
     ISetupMachine,
     ICleanupMachine,
-    MachineBlueprint,
+    IBlueprint,
     Machine,
-    StateSetupFn,
-    StateExitFn,
-    stateComponents,
+    IAspect,
+    IAspectCleanupFn,
+    aspects,
 } from './src';

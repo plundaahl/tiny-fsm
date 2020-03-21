@@ -1,4 +1,4 @@
-import { StateSetupFn } from '../types';
+import { IAspect } from '../IAspect';
 import { ISetupMachine } from '../ISetupMachine';
 
 /**
@@ -9,6 +9,6 @@ import { ISetupMachine } from '../ISetupMachine';
  */
 export const onEnter = <T extends string, D>(
     fn: (machine: ISetupMachine<T, D>) => void
-): StateSetupFn<string, D> => {
+): IAspect<string, D> => {
     return (machine) => { fn(machine); };
 }

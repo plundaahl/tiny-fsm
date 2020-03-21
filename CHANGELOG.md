@@ -15,6 +15,8 @@ This project is currently in design phase, and as such does not follow Semantic 
 - Rename `IAuxDataContainer` to `IAuxDataHoldingMachine`.
 - Split `IMachineSPI` into `ISetupMachine` and `ICleanupMachine`, and refactor to inject each into the appropriate StateComponent steps.
 - Refactor `MachineCore` to pass separate, limited interfaces into onEnter and onExit functions.
+- Rename `StateComponent` to `IAspect`
+- Rename `MachineBlueprint` to `IBlueprint`
 
 ### Removed
 - Type `StateRunFn`.
