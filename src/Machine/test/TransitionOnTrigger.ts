@@ -1,4 +1,5 @@
-import { IMachineSPI } from '../../IMachineSPI';
+import { IAspect } from '../../IAspect'
+import { ISetupMachine } from '../../ISetupMachine';
 
 type Trigger = {
     trigger: () => void,
@@ -18,12 +19,12 @@ export const createTrigger = (): Readonly<Trigger> => {
     }
 }
 
-export const transitionOnTrigger = <T extends string, D>(trigger: Trigger, state: T) => {
-    return (machine: IMachineSPI<T, D>) => {
+export const transitionOnTrigger = <T extends string, D>(
+    trigger: Trigger,
+    state: T,
+): IAspect<T, D> => {
+    return (machine: ISetupMachine<T, D>) => {
         trigger.onTrigger(() => machine.transitionToState(state));
-
-        return {
-            onExit: () => trigger.clear(),
-        }
+        return () => trigger.clear();
     };
 };

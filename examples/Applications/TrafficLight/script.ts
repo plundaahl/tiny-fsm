@@ -1,5 +1,5 @@
 import { Machine } from '../../..';
-import { createTrafficLightFsmBlueprint } from './FsmBlueprints/TrafficLightFsmBlueprint';
+import { createTrafficLightBlueprint } from './Blueprints/TrafficLightBlueprint';
 
 const button = document.getElementById('advance'),
     greenLight = document.getElementById('green'),
@@ -16,8 +16,8 @@ if (button === null
 
 const machine = new Machine();
 
-machine.init(
-    createTrafficLightFsmBlueprint(
+machine.runBlueprint(
+    createTrafficLightBlueprint(
         button,
         greenLight,
         amberLight,

@@ -1,5 +1,5 @@
 import {
-    StateSetupFn,
+    IAspect,
 } from '../..';
 
 /**
@@ -8,11 +8,9 @@ import {
  */
 export const disablesElement = <T extends string>(
     element: HTMLInputElement,
-): StateSetupFn<T, any> => {
+): IAspect<T, any> => {
     return () => {
         element.disabled = true;
-        return {
-            onExit: () => element.disabled = false,
-        }
+        return () => { element.disabled = false };
     }
 }

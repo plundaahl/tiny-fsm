@@ -1,21 +1,20 @@
-import { MachineBlueprint, stateComponents } from '../../../..';
+import { IBlueprint, aspects } from '../../../..';
 import {
     disablesElement,
     transitionOnClick,
     transitionOnCondition,
     transitionAfterTimeout,
-} from '../../../StateComponents';
+} from '../../../Aspects';
 
 const {
-    onRun,
     onEnter,
     onExit,
-} = stateComponents;
+} = aspects;
 
-export const createTimerFsmBlueprint = (
+export const createTimerBlueprint = (
     trigger: HTMLInputElement,
     display: HTMLInputElement,
-): MachineBlueprint<'ready' | 'runningTimer' | 'updating' | 'stopped', undefined> => {
+): IBlueprint<'ready' | 'runningTimer' | 'updating' | 'stopped', undefined> => {
 
     let count: number;
 
@@ -41,7 +40,7 @@ export const createTimerFsmBlueprint = (
                 disablesElement(display),
             ],
             stopped: [
-                onRun(() => { trigger.innerHTML = 'reset'; }),
+                onEnter(() => { trigger.innerHTML = 'reset'; }),
                 transitionOnClick(trigger, 'ready'),
                 disablesElement(display),
             ],

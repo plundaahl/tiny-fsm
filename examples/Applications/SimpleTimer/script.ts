@@ -1,5 +1,5 @@
 import { Machine } from '../../..';
-import { createTimerFsmBlueprint } from './FsmBlueprints/TimerFsmBlueprint';
+import { createTimerBlueprint } from './Blueprints/TimerBlueprint';
 
 const trigger = document.getElementById('trigger') as HTMLInputElement,
     display = document.getElementById('display') as HTMLInputElement;
@@ -9,6 +9,6 @@ if (trigger === null || display === null) {
 }
 
 const machine = new Machine();
-machine.init(
-    createTimerFsmBlueprint(trigger, display)
+machine.runBlueprint(
+    createTimerBlueprint(trigger, display)
 );
