@@ -16,7 +16,7 @@ if (button === null
 
 const machine = new Machine();
 
-machine.init(
+machine.runBlueprint(
     createTrafficLightBlueprint(
         button,
         greenLight,

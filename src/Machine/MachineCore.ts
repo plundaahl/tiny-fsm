@@ -23,7 +23,7 @@ export class MachineCore<S extends string, D>
     }
 
 
-    init<J extends string>(
+    runBlueprint<J extends string>(
         blueprint: IBlueprint<J, D>,
         auxData?: D,
     ): void {
@@ -36,7 +36,7 @@ export class MachineCore<S extends string, D>
         }
 
         this.terminate = this.terminate.bind(this);
-        this.isInitialized = this.isInitialized.bind(this);
+        this.isRunning = this.isRunning.bind(this);
         this.getAuxillaryData = this.getAuxillaryData.bind(this);
         this.setAuxillaryData = this.setAuxillaryData.bind(this);
         this.transitionToState = this.transitionToState.bind(this);
@@ -77,7 +77,7 @@ export class MachineCore<S extends string, D>
     }
 
 
-    isInitialized(): boolean {
+    isRunning(): boolean {
         return this.blueprint !== undefined;
     }
 

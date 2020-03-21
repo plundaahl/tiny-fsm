@@ -67,8 +67,8 @@ const trafficLightBlueprint: IBlueprint<'green' | 'amber' | 'red', {}> = {
 // Create our machine
 const machine = new Machine();
 
-// Initialize it
-machine.init(myBluePrint);
+// Run the blueprint
+machine.runBlueprint(myBluePrint);
 ```
 
 ## Can I See Live Examples?
@@ -108,7 +108,7 @@ function logsFoo(): StateSetupFn<T extends String, any> {
 
 // Using our aspect
 const machine: IMachine<undefined> = new Machine();
-machine.init<'stateA' | 'stateB'>({
+machine.runBlueprint<'stateA' | 'stateB'>({
     initState: 'stateA',
     states: {
         stateA: [

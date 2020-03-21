@@ -9,6 +9,6 @@ if (trigger === null || display === null) {
 }
 
 const machine = new Machine();
-machine.init(
+machine.runBlueprint(
     createTimerBlueprint(trigger, display)
 );

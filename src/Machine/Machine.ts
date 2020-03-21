@@ -10,12 +10,12 @@ export class Machine<D> implements IMachine<D> {
         this.spi = new MachineCore();
     }
 
-    init<S extends string>(blueprint: IBlueprint<S, D>, auxillaryData?: D): void {
-        return this.spi.init(blueprint, auxillaryData);
+    runBlueprint<S extends string>(blueprint: IBlueprint<S, D>, auxillaryData?: D): void {
+        return this.spi.runBlueprint(blueprint, auxillaryData);
     }
 
-    isInitialized(): boolean {
-        return this.spi.isInitialized();
+    isRunning(): boolean {
+        return this.spi.isRunning();
     }
 
     terminate(): void {

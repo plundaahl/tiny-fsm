@@ -7,7 +7,7 @@ import { IBlueprint } from './IBlueprint';
  * exited), see IMachineSPI.
  */
 export interface IMachine<D> extends IAuxDataHoldingMachine<D> {
-    init<S extends string>(blueprint: IBlueprint<S, D>, auxillaryData?: D): void;
-    isInitialized(): boolean;
+    runBlueprint<S extends string>(blueprint: IBlueprint<S, D>, auxillaryData?: D): void;
+    isRunning(): boolean;
     terminate(): void;
 }

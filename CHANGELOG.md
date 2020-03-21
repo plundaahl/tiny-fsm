@@ -17,6 +17,8 @@ This project is currently in design phase, and as such does not follow Semantic 
 - Refactor `MachineCore` to pass separate, limited interfaces into onEnter and onExit functions.
 - Rename `StateComponent` to `IAspect`
 - Rename `MachineBlueprint` to `IBlueprint`
+- Rename `IMachine #init` to `IMachine #runBlueprint`
+- Rename `IMachine #isInitialized` to `IMachine #isRunning`
 
 ### Removed
 - Type `StateRunFn`.

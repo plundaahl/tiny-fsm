@@ -12,10 +12,10 @@ import { ISetupMachine } from '../../ISetupMachine';
 
 
 describe('init', () => {
-    test('Given machine is initialized, when init() is called, error.', () => {
+    test('Given machine is running, when runBlueprint() is called, error.', () => {
         const machine: IMachine<undefined> = new Machine();
 
-        machine.init<'stateA'>({
+        machine.runBlueprint<'stateA'>({
             initState: 'stateA',
             states: {
                 stateA: [],
@@ -23,7 +23,7 @@ describe('init', () => {
         });
 
         expect(() => {
-            machine.init<'stateA'>({
+            machine.runBlueprint<'stateA'>({
                 initState: 'stateA',
                 states: {
                     stateA: [],
@@ -33,13 +33,13 @@ describe('init', () => {
     });
 
 
-    test('Given machine not initialized, when init() is called, the initState is entered', () => {
+    test('Given machine not running, when runBlueprint() is called, the initState is entered', () => {
         const machine: IMachine<undefined> = new Machine();
         const onEnterA = jest.fn();
         const onEnterB = jest.fn();
         const onEnterC = jest.fn();
 
-        machine.init<'stateA' | 'stateB' | 'stateC'>({
+        machine.runBlueprint<'stateA' | 'stateB' | 'stateC'>({
             initState: 'stateB',
             states: {
                 stateA: [onEnter(onEnterA)],
@@ -61,7 +61,7 @@ describe('Transitioning State', () => {
         const machine: IMachine<undefined> = new Machine();
         let curState: string = '';
 
-        machine.init<'stateA' | 'stateB'>({
+        machine.runBlueprint<'stateA' | 'stateB'>({
             initState: 'stateA',
             states: {
                 stateA: [
@@ -107,7 +107,7 @@ describe('Transitioning State', () => {
             callStack.push(TRANSITION_WAS_TRIGGERED);
         };
 
-        machine.init<'stateA' | 'stateB'>({
+        machine.runBlueprint<'stateA' | 'stateB'>({
             initState: 'stateA',
             states: {
                 stateA: [
@@ -148,7 +148,7 @@ describe('Transitioning State', () => {
         };
         const postTrigger = () => () => callStack.push(POST_TRIGGER_TEARDOWN);
 
-        machine.init<'stateA' | 'stateB'>({
+        machine.runBlueprint<'stateA' | 'stateB'>({
             initState: 'stateA',
             states: {
                 stateA: [
@@ -176,7 +176,7 @@ describe('Transitioning State', () => {
         const ENTERED_STATE_C = 'entered state C';
         const ENTERED_STATE_B = 'entered state B';
 
-        machine.init<'stateA' | 'stateB' | 'stateC'>({
+        machine.runBlueprint<'stateA' | 'stateB' | 'stateC'>({
             initState: 'stateA',
             states: {
                 stateA: [
@@ -199,7 +199,7 @@ describe('Transitioning State', () => {
 
 
 describe('Auxillary Data', () => {
-    // test('Given machine not initialized, when id is called, error', () => {
+    // test('Given machine not running, when id is called, error', () => {
     //     const machine: IMachine<undefined> = new Machine<'stateA' | 'stateB'>();
     //     expect(() => machine.id).toThrowError();
     // });
@@ -214,7 +214,7 @@ describe('Entering a state', () => {
             jest.fn(),
         ];
 
-        machine.init<'stateA'>({
+        machine.runBlueprint<'stateA'>({
             initState: 'stateA',
             states: {
                 stateA: [...onEnterFns.map(fn => onEnter(fn))],
@@ -236,7 +236,7 @@ describe('Entering a state', () => {
             () => fnCalls.push('onEnter3'),
         ];
 
-        machine.init<'stateA'>({
+        machine.runBlueprint<'stateA'>({
             initState: 'stateA',
             states: {
                 stateA: [...onEnterFns.map(fn => onEnter(fn))],
@@ -256,7 +256,7 @@ describe('Entering a state', () => {
         const machine: IMachine<undefined> = new Machine();
         const onExitFn = jest.fn();
 
-        machine.init<'stateA'>({
+        machine.runBlueprint<'stateA'>({
             initState: 'stateA',
             states: {
                 stateA: [onExit(onExitFn)],
@@ -273,7 +273,7 @@ describe('Entering a state', () => {
         const onEnterStateC = jest.fn();
         const onEnterStateD = jest.fn();
 
-        machine.init<'stateA' | 'stateB' | 'stateC' | 'stateD'>({
+        machine.runBlueprint<'stateA' | 'stateB' | 'stateC' | 'stateD'>({
             initState: 'stateA',
             states: {
                 stateA: [],
@@ -293,7 +293,7 @@ describe('Entering a state', () => {
         const machine: IMachine<undefined> = new Machine();
         const onExitFn = jest.fn();
 
-        machine.init<'stateA'>({
+        machine.runBlueprint<'stateA'>({
             initState: 'stateA',
             states: {
                 stateA: [onExit(onExitFn)],
@@ -315,7 +315,7 @@ describe('State exit behavior', () => {
             jest.fn(),
         ]
 
-        machine.init<'stateA' | 'stateB'>({
+        machine.runBlueprint<'stateA' | 'stateB'>({
             initState: 'stateA',
             states: {
                 stateA: [
@@ -348,7 +348,7 @@ describe('State exit behavior', () => {
             () => fnCalls.push('exitFn3'),
         ];
 
-        machine.init<'stateA' | 'stateB'>({
+        machine.runBlueprint<'stateA' | 'stateB'>({
             initState: 'stateA',
             states: {
                 stateA: [
@@ -376,7 +376,7 @@ describe('State exit behavior', () => {
             jest.fn(),
         ]
 
-        machine.init<'stateA' | 'stateB'>({
+        machine.runBlueprint<'stateA' | 'stateB'>({
             initState: 'stateA',
             states: {
                 stateA: [
@@ -406,7 +406,7 @@ describe('State exit behavior', () => {
         const onExitStateC = jest.fn();
         const onExitStateD = jest.fn();
 
-        machine.init<'stateA' | 'stateB' | 'stateC' | 'stateD'>({
+        machine.runBlueprint<'stateA' | 'stateB' | 'stateC' | 'stateD'>({
             initState: 'stateA',
             states: {
                 stateA: [transitionOnTrigger(trigger, 'stateB')],
@@ -425,29 +425,29 @@ describe('State exit behavior', () => {
 });
 
 
-describe('isInService', () => {
-    test('Given machine is initialized, when isInService() called, then return true', () => {
+describe('isRunning', () => {
+    test('Given machine is running, when isRunning() called, then return true', () => {
         const machine: IMachine<undefined> = new Machine();
-        machine.init<'stateA'>({
+        machine.runBlueprint<'stateA'>({
             initState: 'stateA',
             states: {
                 stateA: [],
             }
         });
 
-        expect(machine.isInitialized()).toBe(true);
+        expect(machine.isRunning()).toBe(true);
     });
 
 
-    test('Given machine NOT initialized, when isInService() called, then return false', () => {
+    test('Given machine NOT running, when isRunning() called, then return false', () => {
         const machine = new Machine();
-        expect(machine.isInitialized()).toBe(false);
+        expect(machine.isRunning()).toBe(false);
     });
 
 
-    test('Given machine was terminated, when isInService() called, then return false', () => {
+    test('Given machine was terminated, when isRunning() called, then return false', () => {
         const machine: IMachine<undefined> = new Machine();
-        machine.init<'stateA'>({
+        machine.runBlueprint<'stateA'>({
             initState: 'stateA',
             states: {
                 stateA: [],
@@ -455,7 +455,7 @@ describe('isInService', () => {
         });
         machine.terminate();
 
-        expect(machine.isInitialized()).toBe(false);
+        expect(machine.isRunning()).toBe(false);
     });
 });
 
@@ -466,7 +466,7 @@ describe('terminating a machine', () => {
         const machine: IMachine<undefined> = new Machine();
         const onExitFn = jest.fn();
 
-        machine.init<'stateA'>({
+        machine.runBlueprint<'stateA'>({
             initState: 'stateA',
             states: {
                 stateA: [onExit(onExitFn)],
@@ -486,7 +486,7 @@ describe('terminating a machine', () => {
             jest.fn(),
         ];
 
-        machine.init<'stateA'>({
+        machine.runBlueprint<'stateA'>({
             initState: 'stateA',
             states: {
                 stateA: [],
@@ -515,7 +515,7 @@ describe('terminating a machine', () => {
             jest.fn(),
         ];
 
-        machine.init<'stateA'>({
+        machine.runBlueprint<'stateA'>({
             initState: 'stateA',
             states: {
                 stateA: [transitionOnTrigger(trigger, 'end')],
