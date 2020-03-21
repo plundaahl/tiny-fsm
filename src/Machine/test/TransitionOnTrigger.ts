@@ -1,5 +1,5 @@
 import { StateSetupFn } from '../../types'
-import { IMachineSPI } from '../../IMachineSPI';
+import { ISetupMachine } from '../../ISetupMachine';
 
 type Trigger = {
     trigger: () => void,
@@ -23,7 +23,7 @@ export const transitionOnTrigger = <T extends string, D>(
     trigger: Trigger,
     state: T,
 ): StateSetupFn<T, D> => {
-    return (machine: IMachineSPI<T, D>) => {
+    return (machine: ISetupMachine<T, D>) => {
         trigger.onTrigger(() => machine.transitionToState(state));
         return () => trigger.clear();
     };

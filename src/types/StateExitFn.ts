@@ -1,5 +1,5 @@
-import { IMachineSPI } from '../IMachineSPI';
+import { ICleanupMachine } from '../ICleanupMachine';
 
-export type StateExitFn<T extends string, D> = {
-    (machine: IMachineSPI<T, D>): void,
+export type StateExitFn<D> = {
+    (machine: ICleanupMachine<D>): void,
 };

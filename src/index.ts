@@ -1,5 +1,6 @@
-export { IAuxDataContainer } from './IAuxDataContainer';
-export { IMachineSPI } from './IMachineSPI';
+export { IAuxDataHoldingMachine } from './IAuxDataHoldingMachine';
+export { ISetupMachine } from './ISetupMachine';
+export { ICleanupMachine } from './ICleanupMachine';
 export { IMachine } from './IMachine';
 export { Machine } from './Machine';
 

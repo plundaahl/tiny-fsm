@@ -1,5 +1,5 @@
 import {
-    IMachineSPI,
+    ISetupMachine,
     StateSetupFn,
 } from '../..';
 
@@ -11,7 +11,7 @@ export const transitionOnClick = <T extends string>(
     trigger: HTMLElement,
     state: T,
 ): StateSetupFn<T, any> => {
-    return (machine: IMachineSPI<T, any>) => {
+    return (machine: ISetupMachine<T, any>) => {
         trigger.onclick = () => machine.transitionToState(state);
         return () => { delete trigger.onclick };
     }

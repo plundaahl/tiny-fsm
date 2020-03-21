@@ -1,5 +1,6 @@
 import { IMachine } from '../IMachine';
-import { IMachineSPI } from '../IMachineSPI';
+import { ISetupMachine } from '../ISetupMachine';
+import { ICleanupMachine } from '../ICleanupMachine';
 import {
     MachineBlueprint,
     StateExitFn,
@@ -8,14 +9,15 @@ import {
 
 
 export class MachineCore<S extends string, D>
-    implements IMachine<D>, IMachineSPI<S, D> {
+    implements IMachine<D>, ISetupMachine<S, D>, ICleanupMachine<D> {
 
+    private setupMachine: ISetupMachine<S, D>;
+    private cleanupMachine: ICleanupMachine<D>;
     private readonly onEnd?: MachineTerminateFn<D>;
     private auxData?: D;
     private blueprint: MachineBlueprint<S, D>;
-    private onExitFns: StateExitFn<S, D>[] = [];
+    private onExitFns: StateExitFn<D>[] = [];
     private isTransitioning: boolean = false;
-    private isInCleanup: boolean = false;
     private nextState: S | 'end' | undefined;
 
     constructor(onEnd?: MachineTerminateFn<D>) {
@@ -43,6 +45,19 @@ export class MachineCore<S extends string, D>
         this.initializeState = this.initializeState.bind(this);
         this.cleanupState = this.cleanupState.bind(this);
         this.runOnEndFns = this.runOnEndFns.bind(this);
+
+        this.setupMachine = {
+            getAuxillaryData: this.getAuxillaryData,
+            setAuxillaryData: this.setAuxillaryData,
+            transitionToState: this.transitionToState,
+            terminate: this.terminate,
+        };
+
+        this.cleanupMachine = {
+            getAuxillaryData: this.getAuxillaryData,
+            setAuxillaryData: this.setAuxillaryData,
+            terminate: this.terminate,
+        };
 
         this.blueprint = blueprint as unknown as MachineBlueprint<S, D>;
         this.auxData = auxData;
@@ -88,10 +103,6 @@ export class MachineCore<S extends string, D>
             );
         }
 
-        if (this.isInCleanup) {
-            return;
-        }
-
         if (this.isTransitioning) {
             this.nextState = this.nextState || state;
             return;
@@ -119,7 +130,7 @@ export class MachineCore<S extends string, D>
         const cleanupFns = [];
 
         for (let setupFn of this.blueprint.states[state]) {
-            const onExit = setupFn(this);
+            const onExit = setupFn(this.setupMachine);
             onExit && cleanupFns.push(onExit);
         }
 
@@ -128,12 +139,10 @@ export class MachineCore<S extends string, D>
 
 
     private cleanupState(): void {
-        this.isInCleanup = true;
         for (let onExit of this.onExitFns) {
-            onExit(this);
+            onExit(this.cleanupMachine);
         }
         this.onExitFns = [];
-        this.isInCleanup = false;
     }
 
 

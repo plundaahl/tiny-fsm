@@ -1,6 +1,6 @@
-import { IMachineSPI } from '../IMachineSPI';
+import { ISetupMachine } from '../ISetupMachine';
 import { StateExitFn } from './StateExitFn';
 
 export type StateSetupFn<T extends string, D> = {
-    (machine: IMachineSPI<T, D>): StateExitFn<T, D> | void
+    (machine: ISetupMachine<T, D>): StateExitFn<D> | void
 };

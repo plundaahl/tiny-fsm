@@ -8,7 +8,8 @@ import {
     createTrigger,
     transitionOnTrigger,
 } from './TransitionOnTrigger';
-import { IMachineSPI } from '../../IMachineSPI';
+import { ISetupMachine } from '../../ISetupMachine';
+import { ICleanupMachine } from '../../ICleanupMachine';
 
 
 describe('init', () => {
@@ -99,7 +100,7 @@ describe('Transitioning State', () => {
         const preTransitionSetupFn = () => {
             callStack.push(TRANSITION_NOT_YET_TRIGGERED);
         };
-        const triggerTransition = (machine: IMachineSPI<'stateA' | 'stateB', undefined>) => {
+        const triggerTransition = (machine: ISetupMachine<'stateA' | 'stateB', undefined>) => {
             callStack.push(TRIGGERING_TRANSITION);
             machine.transitionToState('stateB');
         };
@@ -141,7 +142,7 @@ describe('Transitioning State', () => {
             callStack.push(TRANSITION_COMPLETE);
         };
         const preTrigger = () => () => callStack.push(PRE_TRIGGER_TEARDOWN);
-        const trigger = (machine: IMachineSPI<'stateA' | 'stateB', undefined>) => {
+        const trigger = (machine: ISetupMachine<'stateA' | 'stateB', undefined>) => {
             callStack.push(TRIGGER_SETUP);
             machine.transitionToState('stateB');
             return () => callStack.push(TRIGGER_TEARDOWN);
@@ -182,33 +183,6 @@ describe('Transitioning State', () => {
                 stateA: [
                     (machine) => machine.transitionToState('stateB'),
                     (machine) => machine.transitionToState('stateC'),
-                ],
-                stateB: [
-                    () => { callStack.push(ENTERED_STATE_B); },
-                ],
-                stateC: [
-                    () => { callStack.push(ENTERED_STATE_C); },
-                ]
-            }
-        });
-
-        expect(callStack).toContain(ENTERED_STATE_B);
-        expect(callStack).not.toContain(ENTERED_STATE_C);
-    });
-
-    test('When a transition is triggered during state teardown, that transition is not executed', () => {
-        const machine: IMachine<undefined> = new Machine();
-        const callStack: string[] = [];
-
-        const ENTERED_STATE_C = 'entered state C';
-        const ENTERED_STATE_B = 'entered state B';
-
-        machine.init<'stateA' | 'stateB' | 'stateC'>({
-            initState: 'stateA',
-            states: {
-                stateA: [
-                    () => (machine) => machine.transitionToState('stateC'),
-                    (machine) => machine.transitionToState('stateB'),
                 ],
                 stateB: [
                     () => { callStack.push(ENTERED_STATE_B); },

@@ -1,6 +1,7 @@
 export {
     IMachine,
-    IMachineSPI,
+    ISetupMachine,
+    ICleanupMachine,
     MachineBlueprint,
     Machine,
     StateSetupFn,

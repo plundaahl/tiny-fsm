@@ -1,5 +1,5 @@
 import {
-    IMachineSPI,
+    ISetupMachine,
     StateSetupFn,
 } from '../..';
 
@@ -12,7 +12,7 @@ export const transitionOnCondition = <T extends string>(
     successState: T,
     failState: T,
 ): StateSetupFn<T, any> => {
-    return (machine: IMachineSPI<T, any>) => {
+    return (machine: ISetupMachine<T, any>) => {
         machine.transitionToState(condition()
             ? successState
             : failState

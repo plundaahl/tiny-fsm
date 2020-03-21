@@ -1,5 +1,5 @@
 import {
-    IMachineSPI,
+    ISetupMachine,
     StateSetupFn,
 } from '../..';
 
@@ -10,7 +10,7 @@ export const transitionAfterTimeout = <T extends string>(
     delayInMs: number,
     state: T,
 ): StateSetupFn<T, any> => {
-    return (machine: IMachineSPI<T, any>) => {
+    return (machine: ISetupMachine<T, any>) => {
         const timer = setTimeout(
             () => machine.transitionToState(state),
             delayInMs,

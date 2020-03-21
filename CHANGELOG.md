@@ -12,6 +12,9 @@ This project is currently in design phase, and as such does not follow Semantic 
 
 ### Changed
 - The `StateSetupFn` now returns a single optional cleanup function, rather than `{ onRun, onExit }`.
+- Rename `IAuxDataContainer` to `IAuxDataHoldingMachine`.
+- Split `IMachineSPI` into `ISetupMachine` and `ICleanupMachine`, and refactor to inject each into the appropriate StateComponent steps.
+- Refactor `MachineCore` to pass separate, limited interfaces into onEnter and onExit functions.
 
 ### Removed
 - Type `StateRunFn`.
